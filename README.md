@@ -51,9 +51,10 @@ save_gif(volume, masks, "propagation.gif")
 
 ## Tutorial
 
-[`tutorial/medsam2_3d_ct.ipynb`](tutorial/medsam2_3d_ct.ipynb) walks through the whole
-method — loading, windowing, choosing the prompt, propagating, rendering — and then
-tests three claims the method rests on:
+[`tutorial/medsam2_3d_ct.ipynb`](tutorial/medsam2_3d_ct.ipynb) runs the whole method on a
+single case from the MedSAM2 demo dataset — a few MB, fetched automatically. Because that
+dataset ships ground-truth masks, the notebook places the prompt from the label and scores
+the result, then tests three claims the method rests on:
 
 1. **Windowing changes the result.** Reruns on a naively min-maxed volume and scores the difference.
 2. **Backward propagation matters.** Runs forward-only and reports it as a fraction of the bidirectional result.
