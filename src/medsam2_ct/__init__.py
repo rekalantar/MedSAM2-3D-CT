@@ -18,7 +18,13 @@ from .viz import overlay_mask, save_gif
 
 __version__ = "0.1.0"
 __all__ = [
-    "window_hu", "window_preset", "load_volume", "PRESETS",
-    "build_predictor", "segment_volume", "largest_component",
-    "overlay_mask", "save_gif",
+    "PRESETS",
+    "build_predictor",
+    "largest_component",
+    "load_volume",
+    "overlay_mask",
+    "save_gif",
+    "segment_volume",
+    "window_hu",
+    "window_preset",
 ]
