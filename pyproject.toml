@@ -18,7 +18,7 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
 ]
-dependencies = ["numpy>=1.26", "scipy>=1.11", "matplotlib>=3.8", "imageio>=2.34"]
+dependencies = ["numpy>=1.26", "scipy>=1.11", "matplotlib>=3.8", "imageio>=2.34", "pillow>=10.0"]
 
 [project.optional-dependencies]
 io = ["SimpleITK>=2.3"]

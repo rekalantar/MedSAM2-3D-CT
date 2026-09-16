@@ -72,10 +72,23 @@ Needs a GPU runtime.
 | `window_preset(volume, preset)` | `abdomen`, `lung`, `brain`, `bone`, `mediastinum` |
 | `load_volume(path)` | NIfTI/DICOM → array + spacing, both `(z, y, x)` |
 | `build_predictor(config, checkpoint)` | MedSAM2 video predictor |
+| `resize_grayscale_to_rgb(volume, size)` | (D,H,W) uint8 → (D,3,512,512) for the encoder |
+| `preprocess(volume, size, device)` | the above, normalised to a tensor `init_state` accepts |
+| `init_state(predictor, volume)` | preprocess + open an inference state |
 | `segment_volume(predictor, volume, box, key_slice)` | one box → 3D mask, both directions |
 | `largest_component(mask)` | drop propagation leakage |
 | `overlay_mask(slice, mask)` | RGB overlay |
 | `save_gif(volume, masks, path)` | scrolling animation |
+
+**Preprocessing.** SAM 2's encoder is a natural-image backbone: it wants three channels
+at 512×512 with ImageNet normalisation, as a float tensor. Handing `init_state` a raw
+NumPy volume fails deep inside the predictor with an `AttributeError` about `.to`.
+`segment_volume` does this for you; `preprocess` exposes it if you're driving the
+predictor directly.
+
+Note that `video_height`/`video_width` stay the volume's *original* dimensions. Prompts
+are therefore given in original pixel coordinates — the predictor normalises them
+internally — and masks come back at original resolution.
 
 ## Two things that silently go wrong
 

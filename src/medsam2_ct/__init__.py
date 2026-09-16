@@ -13,16 +13,26 @@ this works on medical contrast rather than natural-image contrast.
     save_gif(volume, masks, "propagation.gif")
 """
 from .ct import PRESETS, load_volume, window_hu, window_preset
-from .segment import build_predictor, largest_component, segment_volume
+from .segment import (
+                      build_predictor,
+                      init_state,
+                      largest_component,
+                      preprocess,
+                      resize_grayscale_to_rgb,
+                      segment_volume,
+)
 from .viz import overlay_mask, save_gif
 
 __version__ = "0.1.0"
 __all__ = [
     "PRESETS",
     "build_predictor",
+    "init_state",
     "largest_component",
     "load_volume",
     "overlay_mask",
+    "preprocess",
+    "resize_grayscale_to_rgb",
     "save_gif",
     "segment_volume",
     "window_hu",
