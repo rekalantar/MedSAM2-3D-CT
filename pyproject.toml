@@ -25,7 +25,7 @@ io = ["SimpleITK>=2.3"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.urls]
-Homepage = "https://github.com/rekalantar/medsam2-3d-ct"
+Homepage = "https://github.com/rekalantar/MedSAM2-3D-CT"
 Article = "ARTICLE_URL"
 
 [tool.hatch.build.targets.wheel]

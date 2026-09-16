@@ -126,7 +126,7 @@ def test_defines_nothing_the_package_should_own():
 def test_install_cell_pins_to_this_repo():
     """Installing from a clone rather than the git URL avoids pip's wheel cache."""
     joined = "\n".join(_code_cells())
-    assert "pip install -q -e /content/medsam2-3d-ct" in joined
-    assert "git clone -q https://github.com/rekalantar/medsam2-3d-ct.git" in joined
+    assert "pip install -q -e /content/MedSAM2-3D-CT" in joined
+    assert "git clone -q https://github.com/rekalantar/MedSAM2-3D-CT.git" in joined
     # a leftover install in the runtime would shadow the clone
     assert "pip uninstall -y -q medsam2-ct" in joined
