@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "medsam2-ct"
+version = "0.1.0"
+description = "Segment a 3D CT volume by prompting a single slice with MedSAM2"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Reza Kalantar" }]
+keywords = ["medical-imaging", "segmentation", "medsam", "sam2", "ct", "radiotherapy"]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Topic :: Scientific/Engineering :: Image Processing",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+]
+dependencies = ["numpy>=1.26", "scipy>=1.11", "matplotlib>=3.8", "imageio>=2.34"]
+
+[project.optional-dependencies]
+io = ["SimpleITK>=2.3"]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+
+[project.urls]
+Homepage = "https://github.com/rekalantar/medsam2-3d-ct"
+Article = "ARTICLE_URL"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/medsam2_ct"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
