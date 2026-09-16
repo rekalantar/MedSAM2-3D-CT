@@ -13,30 +13,38 @@ this works on medical contrast rather than natural-image contrast.
     save_gif(volume, masks, "propagation.gif")
 """
 from .ct import PRESETS, load_volume, window_hu, window_preset
+from .data import DEMO_DATASET, box_from_mask, largest_cross_section, load_demo_case
+from .evaluate import dice, per_slice_dice
 from .segment import (
-                      build_predictor,
-                      init_state,
-                      largest_component,
-                      preprocess,
-                      resize_grayscale_to_rgb,
-                      segment_volume,
+                   build_predictor,
+                   init_state,
+                   largest_component,
+                   preprocess,
+                   resize_grayscale_to_rgb,
+                   segment_volume,
 )
 from .viz import overlay_mask, plot_slices, rotate_clockwise, save_gif
 
 __version__ = "0.1.0"
 __all__ = [
-    "PRESETS",
-    "build_predictor",
-    "init_state",
-    "largest_component",
-    "load_volume",
-    "overlay_mask",
-    "plot_slices",
-    "preprocess",
-    "resize_grayscale_to_rgb",
-    "rotate_clockwise",
-    "save_gif",
-    "segment_volume",
-    "window_hu",
-    "window_preset",
+                   "DEMO_DATASET",
+                   "PRESETS",
+                   "box_from_mask",
+                   "build_predictor",
+                   "dice",
+                   "init_state",
+                   "largest_component",
+                   "largest_cross_section",
+                   "load_demo_case",
+                   "load_volume",
+                   "overlay_mask",
+                   "per_slice_dice",
+                   "plot_slices",
+                   "preprocess",
+                   "resize_grayscale_to_rgb",
+                   "rotate_clockwise",
+                   "save_gif",
+                   "segment_volume",
+                   "window_hu",
+                   "window_preset",
 ]

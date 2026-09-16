@@ -38,16 +38,31 @@ bash download.sh
 ## Use
 
 ```python
-from medsam2_ct import load_volume, window_hu, build_predictor, segment_volume, save_gif
+from medsam2_ct import (build_predictor, dice, largest_component,
+                        load_demo_case, save_gif, segment_volume)
+
+case = load_demo_case("000009_03_01_036-048")     # windowed, prompt derived from label
+
+predictor = build_predictor()
+masks = largest_component(
+    segment_volume(predictor, case["volume"], case["box"], case["key"]))
+
+print(dice(case["truth"], masks))
+save_gif(case["volume"], masks, "propagation.gif", rotate=1)
+```
+
+Or bring your own scan:
+
+```python
+from medsam2_ct import box_from_mask, load_volume, segment_volume, window_hu
 
 volume_hu, spacing = load_volume("scan.nii.gz")        # (z, y, x), mm
 volume = window_hu(volume_hu, width=400, level=40)     # HU -> uint8, abdominal window
-
-predictor = build_predictor()
 masks = segment_volume(predictor, volume, box=[180, 180, 260, 260], key_slice=47)
-
-save_gif(volume, masks, "propagation.gif")
 ```
+
+Box coordinates are in the volume's own pixel space — not resized to the model's input
+size, and not rotated for display. The predictor normalises them internally.
 
 ## Tutorial
 
@@ -68,27 +83,24 @@ Needs a GPU runtime.
 
 | Function | Does |
 |---|---|
+| `load_demo_case(case)` | fetch a demo case, window it, derive the prompt |
+| `load_volume(path)` | NIfTI/DICOM → array + spacing, both `(z, y, x)` |
 | `window_hu(volume, width, level)` | Hounsfield windowing to uint8 |
 | `window_preset(volume, preset)` | `abdomen`, `lung`, `brain`, `bone`, `mediastinum` |
-| `load_volume(path)` | NIfTI/DICOM → array + spacing, both `(z, y, x)` |
-| `build_predictor(config, checkpoint)` | MedSAM2 video predictor |
+| `largest_cross_section(mask)` | index of the clearest slice to prompt |
+| `box_from_mask(mask_2d, margin)` | `[x0, y0, x1, y1]` prompt from a mask |
 | `resize_grayscale_to_rgb(volume, size)` | (D,H,W) uint8 → (D,3,512,512) for the encoder |
 | `preprocess(volume, size, device)` | the above, normalised to a tensor `init_state` accepts |
+| `build_predictor(config, checkpoint)` | MedSAM2 video predictor |
 | `init_state(predictor, volume)` | preprocess + open an inference state |
 | `segment_volume(predictor, volume, box, key_slice)` | one box → 3D mask, both directions |
 | `largest_component(mask)` | drop propagation leakage |
+| `dice(a, b)` | volumetric overlap |
+| `per_slice_dice(truth, pred, key_slice)` | Dice vs distance from the prompt |
+| `rotate_clockwise(stack, turns)` | display orientation for axial viewing |
 | `overlay_mask(slice, mask)` | RGB overlay |
-| `save_gif(volume, masks, path)` | scrolling animation |
-
-**Preprocessing.** SAM 2's encoder is a natural-image backbone: it wants three channels
-at 512×512 with ImageNet normalisation, as a float tensor. Handing `init_state` a raw
-NumPy volume fails deep inside the predictor with an `AttributeError` about `.to`.
-`segment_volume` does this for you; `preprocess` exposes it if you're driving the
-predictor directly.
-
-Note that `video_height`/`video_width` stay the volume's *original* dimensions. Prompts
-are therefore given in original pixel coordinates — the predictor normalises them
-internally — and masks come back at original resolution.
+| `plot_slices(volume, masks, truth, rotate)` | cropped contact sheet with contours |
+| `save_gif(volume, masks, path, rotate)` | scrolling animation |
 
 ## Two things that silently go wrong
 
