@@ -11,7 +11,7 @@ natural-image contrast.
 
 That takes a 94-slice lesion annotation from 94 prompts to one.
 
-![propagation](assets/propagation.gif)
+![One box on one slice, propagated through the volume](assets/CT_seg.gif)
 
 ---
 
