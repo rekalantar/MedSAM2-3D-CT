@@ -21,7 +21,7 @@ from .segment import (
                       resize_grayscale_to_rgb,
                       segment_volume,
 )
-from .viz import overlay_mask, save_gif
+from .viz import overlay_mask, plot_slices, rotate_clockwise, save_gif
 
 __version__ = "0.1.0"
 __all__ = [
@@ -31,8 +31,10 @@ __all__ = [
     "largest_component",
     "load_volume",
     "overlay_mask",
+    "plot_slices",
     "preprocess",
     "resize_grayscale_to_rgb",
+    "rotate_clockwise",
     "save_gif",
     "segment_volume",
     "window_hu",

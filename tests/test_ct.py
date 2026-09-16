@@ -87,3 +87,65 @@ def test_save_gif_rejects_length_mismatch(tmp_path):
     with pytest.raises(ValueError):
         save_gif(np.zeros((5, 8, 8), np.uint8), np.zeros((4, 8, 8), bool),
                  tmp_path / "x.gif")
+
+
+def test_rotate_clockwise_is_a_quarter_turn():
+    from medsam2_ct import rotate_clockwise
+
+    stack = np.zeros((1, 4, 4), dtype=np.uint8)
+    stack[0, 0, 0] = 9                       # top-left
+    out = rotate_clockwise(stack, 1)
+    assert out[0, 0, 3] == 9                 # clockwise -> top-right
+    assert out.shape == stack.shape
+
+
+def test_rotate_four_turns_is_identity():
+    from medsam2_ct import rotate_clockwise
+
+    rng = np.random.default_rng(0)
+    stack = rng.integers(0, 255, (3, 6, 6), dtype=np.uint8)
+    assert np.array_equal(rotate_clockwise(stack, 4), stack)
+    assert np.array_equal(rotate_clockwise(stack, 0), stack)
+
+
+def test_rotate_keeps_volume_and_mask_aligned():
+    from medsam2_ct import rotate_clockwise
+
+    mask = np.zeros((2, 8, 8), dtype=bool)
+    mask[:, 1, 6] = True
+    volume = np.zeros((2, 8, 8), dtype=np.uint8)
+    volume[mask] = 255
+    r_vol, r_mask = rotate_clockwise(volume, 1), rotate_clockwise(mask, 1)
+    assert (r_vol[r_mask] == 255).all()
+
+
+def test_plot_slices_builds_a_grid(tmp_path):
+    import matplotlib
+    matplotlib.use("Agg")
+    from medsam2_ct import plot_slices
+
+    rng = np.random.default_rng(0)
+    volume = rng.integers(0, 255, (12, 200, 260), dtype=np.uint8)
+    truth = np.zeros((12, 200, 260), dtype=bool)
+    truth[3:9, 90:120, 80:115] = True
+    pred = np.zeros_like(truth)
+    pred[3:9, 92:118, 82:113] = True
+
+    fig = plot_slices(volume, pred, truth, rotate=1)
+    assert len(fig.axes) == 6                    # one per masked slice
+    out = tmp_path / "sheet.png"
+    fig.savefig(out)
+    assert out.stat().st_size > 0
+
+    grid = plot_slices(volume, pred, truth, ncols=4)
+    assert len(grid.axes) == 8                   # 2 rows x 4, two left blank
+
+
+def test_plot_slices_rejects_empty_mask():
+    import matplotlib
+    matplotlib.use("Agg")
+    from medsam2_ct import plot_slices
+
+    volume = np.zeros((4, 32, 32), dtype=np.uint8)
+    with pytest.raises(ValueError):
+        plot_slices(volume, np.zeros((4, 32, 32), dtype=bool))
