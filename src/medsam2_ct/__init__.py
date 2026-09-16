@@ -25,7 +25,7 @@ from .segment import (
 )
 from .viz import overlay_mask, plot_slices, rotate_clockwise, save_gif
 
-__version__ = "0.1.0"
+__version__ = "0.3.0"
 __all__ = [
                    "DEMO_DATASET",
                    "PRESETS",

@@ -124,9 +124,14 @@ scans — no error, perfectly plausible numbers.
 ```bash
 git clone https://github.com/rekalantar/medsam2-3d-ct.git
 cd medsam2-3d-ct
-pip install -e ".[dev]"
+pip install -e ".[dev,io]"
 pytest
 ```
+
+41 tests. Four of them check the tutorial notebook statically — that every cell parses,
+that every `from medsam2_ct import` resolves, that no name is used before it is bound,
+and that the notebook defines no helper functions of its own. A broken notebook is
+otherwise only discovered after a ten-minute GPU install.
 
 ## Reference
 
