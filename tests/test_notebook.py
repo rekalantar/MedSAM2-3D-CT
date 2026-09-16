@@ -128,3 +128,5 @@ def test_install_cell_pins_to_this_repo():
     joined = "\n".join(_code_cells())
     assert "pip install -q -e /content/medsam2-3d-ct" in joined
     assert "git clone -q https://github.com/rekalantar/medsam2-3d-ct.git" in joined
+    # a leftover install in the runtime would shadow the clone
+    assert "pip uninstall -y -q medsam2-ct" in joined
