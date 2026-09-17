@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import ast
 import builtins
-import importlib
 import json
 import pathlib
 
@@ -44,16 +43,34 @@ def test_every_cell_parses():
             pytest.fail(f"cell {i} line {exc.lineno}: {exc.msg}")
 
 
-def test_package_imports_resolve():
-    """Every `from medsam2_ct import X` names something that exists."""
+def test_is_standalone():
+    """The tutorial must not depend on this package being installed.
+
+    Readers should be able to run it having installed only MedSAM2. It also removes a
+    whole class of failure where pip serves a stale build of our own wrapper.
+    """
     for i, source in enumerate(_code_cells(), 1):
         tree = ast.parse(_strip_magics(source))
         for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("medsam2_ct"):
-                module = importlib.import_module(node.module)
+            if isinstance(node, ast.ImportFrom):
+                assert not (node.module or "").startswith("medsam2_ct"), \
+                    f"cell {i} imports medsam2_ct; the notebook must be self-contained"
+            if isinstance(node, ast.Import):
                 for alias in node.names:
-                    assert hasattr(module, alias.name), \
-                        f"cell {i}: {node.module} has no {alias.name!r}"
+                    assert not alias.name.startswith("medsam2_ct"), \
+                        f"cell {i} imports medsam2_ct; the notebook must be self-contained"
+
+
+def test_defines_the_functions_it_uses():
+    """Self-contained means the helpers are defined in the notebook itself."""
+    defined = {
+        node.name
+        for source in _code_cells()
+        for node in ast.parse(_strip_magics(source)).body
+        if isinstance(node, ast.FunctionDef)
+    }
+    for name in ("load_nifti", "dice", "window_hu", "to_frames", "largest_component"):
+        assert name in defined, f"notebook should define {name}() itself"
 
 
 def test_no_undefined_names():
@@ -110,26 +127,12 @@ def test_does_not_shadow_pil_image():
     assert "from IPython.display import Image" not in joined
 
 
-def test_defines_nothing_the_package_should_own():
-    """Helper functions belong in the library, where they can be tested."""
-    joined = "\n".join(_strip_magics(s) for s in _code_cells())
-    top_level = [
-        node.name
-        for source in _code_cells()
-        for node in ast.parse(_strip_magics(source)).body
-        if isinstance(node, ast.FunctionDef)
-    ]
-    assert not top_level, f"move these into medsam2_ct: {top_level}"
-    assert joined  # sanity
-
-
-def test_install_cell_pins_to_this_repo():
-    """Installing from a clone rather than the git URL avoids pip's wheel cache."""
+def test_only_external_install_is_medsam2():
+    """The install cell should clone MedSAM2 and nothing of ours."""
     joined = "\n".join(_code_cells())
-    assert "pip install -q -e /content/MedSAM2-3D-CT" in joined
-    assert "git clone -q https://github.com/rekalantar/MedSAM2-3D-CT.git" in joined
-    # a leftover install in the runtime would shadow the clone
-    assert "pip uninstall -y -q medsam2-ct" in joined
+    assert "git clone -q https://github.com/bowang-lab/MedSAM2.git" in joined
+    assert "MedSAM2-3D-CT.git" not in joined, \
+        "the tutorial should not need this repo installed"
 
 
 def test_has_a_colab_badge():

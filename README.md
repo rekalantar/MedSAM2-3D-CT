@@ -106,8 +106,12 @@ size, and not rotated for display. The predictor normalises them internally.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rekalantar/MedSAM2-3D-CT/blob/main/tutorial/medsam2_3d_ct.ipynb)
 
-Runs both cases start to finish on a free T4: loading, windowing, prompting, propagating,
-scoring, and the figures. Needs a GPU runtime.
+**Self-contained** — every function it uses is defined in the notebook itself, so the only
+install is MedSAM2. Runs start to finish on a free T4: loading, windowing, prompting,
+propagating, scoring and the figures.
+
+The package below is the same code as an importable library, for when you want to use it in
+your own work rather than read it.
 
 ## API
 
@@ -163,9 +167,9 @@ pip install -e ".[dev,io]"
 pytest
 ```
 
-41 tests. Four check the tutorial notebook statically — that every cell parses, that every
+42 tests. Six check the tutorial notebook statically — that every cell parses, that every
 `from medsam2_ct import` resolves, that no name is used before it is bound, and that the
-notebook defines no helper functions of its own.
+notebook stays self-contained rather than importing this package.
 
 ## Reference
 
