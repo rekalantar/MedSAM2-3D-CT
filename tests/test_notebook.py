@@ -130,3 +130,11 @@ def test_install_cell_pins_to_this_repo():
     assert "git clone -q https://github.com/rekalantar/MedSAM2-3D-CT.git" in joined
     # a leftover install in the runtime would shadow the clone
     assert "pip uninstall -y -q medsam2-ct" in joined
+
+
+def test_has_a_colab_badge():
+    """The badge is how anyone browsing the repo actually runs this."""
+    nb = json.loads(NOTEBOOK.read_text())
+    markdown = "\n".join(c["source"] for c in nb["cells"] if c["cell_type"] == "markdown")
+    assert "colab-badge.svg" in markdown
+    assert "colab.research.google.com/github/rekalantar/MedSAM2-3D-CT" in markdown
